@@ -7,14 +7,11 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 
 public class CompressionProducer {
-	private static final Logger logger = LoggerFactory.getLogger(CompressionProducer.class);
-
-  public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception {
     Properties props = new Properties();
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
     props.put(ProducerConfig.CLIENT_ID_CONFIG, "SimpleProducer");
@@ -25,7 +22,7 @@ public class CompressionProducer {
     // valid values are : none, gzip,snappy,lz4, zstd
     // See documentation for values to give to this property
     // https://kafka.apache.org/documentation/#configuration
-    props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
+    props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "zstd");
     
     KafkaProducer<String, String> producer = new KafkaProducer<>(props);
 
@@ -43,7 +40,7 @@ public class CompressionProducer {
         RecordMetadata meta = producer.send(record).get();
         long t2 = System.nanoTime();
         
-        logger.debug(String.format("Sent record [%d] (key:%s, value:%s), "
+        System.out.println(String.format("Sent record [%d] (key:%s, value:%s), "
         		+ "meta (partition=%d, offset=%d, timestamp=%d), "
         		+ "time took = %.2f ms",
         		i, key, value, meta.partition(), meta.offset(), meta.timestamp(),
