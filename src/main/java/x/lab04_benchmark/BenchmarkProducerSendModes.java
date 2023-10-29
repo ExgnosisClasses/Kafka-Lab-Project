@@ -11,6 +11,8 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import x.utils.ClickStreamGenerator;
 import x.utils.MyConfig;
 
+// Oct 2023 class
+
 enum SendMode {
 	SYNC, ASYNC, FIRE_AND_FORGET
 }
