@@ -8,7 +8,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-
+// Oct 2023 class
 
 public class CompressionProducer {
 	public static void main(String[] args) throws Exception {
