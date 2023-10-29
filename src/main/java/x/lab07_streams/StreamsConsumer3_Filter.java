@@ -10,17 +10,16 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Printed;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import com.google.gson.Gson;
 
 import x.utils.ClickstreamData;
 import x.utils.MyConfig;
 
-public class StreamsConsumer3_Filter {
-	private static final Logger logger = LoggerFactory.getLogger(StreamsConsumer3_Filter.class);
+// Oct 2023 class
 
+public class StreamsConsumer3_Filter {
 	public static void main(String[] args) {
 
 		Properties config = new Properties();
@@ -55,7 +54,7 @@ public class StreamsConsumer3_Filter {
             try {
                 ClickstreamData clickstreamData = gson.fromJson(value, ClickstreamData.class);
                 // TODO-1 : check if action.equals("clicked")
-                return ((clickstreamData.action != null) && (clickstreamData.action.equals("???")));
+                return ((clickstreamData.action != null) && (clickstreamData.action.equals("clicked")));
 
             } catch (Exception e) {
                 return false;
@@ -74,7 +73,7 @@ public class StreamsConsumer3_Filter {
 		streams.cleanUp();
 		streams.start();
 
-		logger.info("kstreams starting on " + MyConfig.TOPIC_CLICKSTREAM);
+		System.out.println("kstreams starting on " + MyConfig.TOPIC_CLICKSTREAM);
 
 		Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
 
