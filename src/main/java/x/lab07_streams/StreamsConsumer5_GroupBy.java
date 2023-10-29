@@ -16,16 +16,17 @@ import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.KeyValueMapper;
 import org.apache.kafka.streams.kstream.Printed;
 import org.apache.kafka.streams.kstream.Produced;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import com.google.gson.Gson;
 
 import x.utils.ClickstreamData;
 import x.utils.MyConfig;
 
+// Oct 2023 Class
+
 public class StreamsConsumer5_GroupBy {
-	private static final Logger logger = LoggerFactory.getLogger(StreamsConsumer5_GroupBy.class);
+	
 
 	public static void main(String[] args) {
 
@@ -66,16 +67,16 @@ public class StreamsConsumer5_GroupBy {
 					public KeyValue<String, Integer> apply(String key, String value) {
 						try {
 							ClickstreamData clickstream = gson.fromJson(value, ClickstreamData.class);
-							logger.debug("map() : got : " + value);
+							//System.out.println("map() : got : " + value);
 							String action = (clickstream.action != null) && (!clickstream.action.isEmpty())
 									? clickstream.action
 									: "unknown";
 							KeyValue<String, Integer> actionKV = new KeyValue<>(action, 1);
-							logger.debug("map() : returning : " + actionKV);
+							//System.out.println("map() : returning : " + actionKV);
 							return actionKV;
 						} catch (Exception ex) {
 							// logger.error("",ex);
-							logger.error("Invalid JSON : \n" + value);
+							System.out.println("Invalid JSON : \n" + value);
 							return new KeyValue<String, Integer>("unknown", 1);
 						}
 					}
@@ -85,48 +86,22 @@ public class StreamsConsumer5_GroupBy {
 		/*-
 		 ==== Now aggregate and count actions ===
 		we have to explicity state the K,V serdes in groupby, as the types are changing
-
-		# TODO-1 : aggregate
-			param1 : key type : Serdes.String()
-			param2 : value type : Serdes.Integer()
-		 groupByKey accepts grouped object with String serd as key and Integer serde as value
-		 
-		 uncomment the following 2 lines
-		 */
-		
-		 // KGroupedStream<String, Integer> grouped =
-		 // 					actionStream.groupByKey(Grouped.with(Serdes.String(), Serdes.Integer()));
+		*/
+		 KGroupedStream<String, Integer> grouped =
+		  					actionStream.groupByKey(Grouped.with(Serdes.String(), Serdes.Integer()));
 
 		
-		/*-
-		  # TODO-2 : count grouped stream
-		  Hint : grouped.count()
-		  
-		  uncomment the following 2 lines
-		 */
+		  final KTable<String, Long> actionCount = grouped.count();
+		  actionCount.toStream().print(Printed.toSysOut());
 
-		 // final KTable<String, Long> actionCount = grouped.count();
-		 // actionCount.toStream().print(Printed.toSysOut());
 
-		/*-
-		 # BONUS lab 1 :
-		 lets write the data into another topic
-		 Hint : param 1 : name of queue : "action-count"
-		 
-		 And use 'consoleConsumer' to monitor the queue output!
-		 
-		 Here is a kafkacat example
-		 	$   kafkacat -q -C -b localhost:9092 -t action-count  -s key=s  -s value=q -f '%k:%s\n'
-		 */
-		 
-		// actionCount.toStream().to("???", Produced.with(Serdes.String(),Serdes.Long()));
 
 		// start the stream
 		final KafkaStreams streams = new KafkaStreams(builder.build(), config);
 		streams.cleanUp();
 		streams.start();
 
-		logger.info("kstreams starting on " + MyConfig.TOPIC_CLICKSTREAM);
+		System.out.println("kstreams starting on " + MyConfig.TOPIC_CLICKSTREAM);
 
 		Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
 
