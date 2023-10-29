@@ -7,8 +7,6 @@ import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import x.utils.ClickStreamGenerator;
 import x.utils.MyConfig;
@@ -18,8 +16,6 @@ enum SendMode {
 }
 
 public class BenchmarkProducerSendModes implements Runnable, Callback {
-	private static final Logger logger = LoggerFactory.getLogger(BenchmarkProducerSendModes.class);
-
 	private final String topic;
 	private final int maxMessages;
 	private final SendMode sendMode;
@@ -59,15 +55,15 @@ public class BenchmarkProducerSendModes implements Runnable, Callback {
 				switch (this.sendMode) {
                     case FIRE_AND_FORGET:
                         // TODO : send here
-                        // producer.send(record);
+                        producer.send(record);
                         break;
                     case SYNC:
                         // TODO : send here
-                        // producer.send(record).get();
+                        producer.send(record).get();
                         break;
                     case ASYNC:
                         // TODO : send here
-                        // producer.send(record, this);
+                        producer.send(record, this);
                         break;
 				}
 			} catch (Exception e) {
@@ -81,7 +77,7 @@ public class BenchmarkProducerSendModes implements Runnable, Callback {
 		producer.close(); // close connection
 
 		// print summary
-		logger.info("== " + toString() + " done.  " + formatter.format(numMessages) + " messages sent in "
+		System.out.println("== " + toString() + " done.  " + formatter.format(numMessages) + " messages sent in "
 				+ formatter.format((end - start) / 10e6) + " milli secs.  Throughput : "
 				+ formatter.format((long) (numMessages * 10e9 / (end - start))) + " msgs / sec");
 
@@ -97,7 +93,7 @@ public class BenchmarkProducerSendModes implements Runnable, Callback {
 	@Override
 	public void onCompletion(RecordMetadata meta, Exception ex) {
 		if (ex != null) {
-			logger.error("Callback :  Error during async send");
+			System.out.println("Callback :  Error during async send");
 			ex.printStackTrace();
 		}
 		if (meta != null) {
@@ -112,11 +108,11 @@ public class BenchmarkProducerSendModes implements Runnable, Callback {
 		for (SendMode sendMode : SendMode.values()) {
 			// TODO : once the code is working, increase the number of events to a million (1000000)
 			BenchmarkProducerSendModes producer = new BenchmarkProducerSendModes(MyConfig.TOPIC_BENCHMARK, 100000, sendMode);
-			logger.info("== Producer starting.... : " + producer);
+			System.out.println("== Producer starting.... : " + producer);
 			Thread t1 = new Thread(producer);
 			t1.start();
 			t1.join(); // wait for thread to complete
-			logger.info("== Producer done.\n\n");
+			System.out.println("== Producer done.\n\n");
 		}
 
 	}
