@@ -38,7 +38,7 @@ public class StreamsConsumer1 {
 
 	    //# TODO-1 : construct KStream
 	    //#     param 1 : topic name  : "clickstream"
-	    final KStream<String, String> clickstream = builder.stream("???");
+	    final KStream<String, String> clickstream = builder.stream("clickstream");
 		
 		// printing to console
 		clickstream.print(Printed.toSysOut());
@@ -48,7 +48,7 @@ public class StreamsConsumer1 {
 	    streams.cleanUp();
 	    streams.start();
 	    
-	    logger.info("kstreams starting on " + MyConfig.TOPIC_CLICKSTREAM);
+	    System.out.println("kstreams starting on " + MyConfig.TOPIC_CLICKSTREAM);
 	    
 	    Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
 
