@@ -1,6 +1,7 @@
 package x.lab05_offsets;
 
 import java.time.Duration;
+
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.Set;
@@ -11,6 +12,8 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+// Oct 2023 class
 
 public class ManualOffsetConsumer {
 
@@ -24,12 +27,11 @@ public class ManualOffsetConsumer {
 		props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 		props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 
-		// TODO-1: Set 'enable.auto.commit' to 'false'
-		props.put("enable.auto.commit", "???");
+		props.put("enable.auto.commit", "false");
 		KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
-		consumer.subscribe(Arrays.asList("test"));
+		consumer.subscribe(Arrays.asList("offsets"));
 
-        logger.info("Listening on topic: test...");
+        System.out.println("Listening on topic: offets...");
 
 		int numMessages = 0;
 		while (true) {
@@ -40,31 +42,22 @@ public class ManualOffsetConsumer {
 			if (count == 0)
 				continue;
 
-			logger.debug("Got " + count + " messages");
+			 System.out.println("Got " + count + " messages");
 
 			for (ConsumerRecord<String, String> record : records) {
 				numMessages++;
-				logger.debug("Received message [" + numMessages + "] : " + record);
+				 System.out.println("Received message [" + numMessages + "] : " + record);
 			}
 
 			// print offsets
 			Set<TopicPartition> partitions = consumer.assignment();
 			for (TopicPartition p : partitions) {
 				long pos = consumer.position(p);
-				logger.debug("OFFSET : partition:" + p.partition() + ", offset:" + pos);
+				 System.out.println("OFFSET : partition:" + p.partition() + ", offset:" + pos);
 			}
 
-			/*-
-			 TODO-2: - do a few runs without calling 'commitSync' 
-
-                         Observe the output
-
-                         Then turn on commitsync and do a few runs.
-
-                         Observe the output
-                         
-			 */
-			// consumer.commitSync();
+			//********************
+			//consumer.commitSync();
 
 		}
 
