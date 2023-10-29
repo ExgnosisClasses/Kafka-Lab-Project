@@ -12,16 +12,17 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KeyValueMapper;
 import org.apache.kafka.streams.kstream.Printed;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import com.google.gson.Gson;
 
 import x.utils.ClickstreamData;
 import x.utils.MyConfig;
 
+// Oct 2023 Class
+
 public class StreamsConsumer4_Map {
-	private static final Logger logger = LoggerFactory.getLogger(StreamsConsumer4_Map.class);
+	
 
 	public static void main(String[] args) {
 
@@ -63,36 +64,17 @@ public class StreamsConsumer4_Map {
 				.map(new KeyValueMapper<String, String, KeyValue<String, Integer>>() {
 					public KeyValue<String, Integer> apply(String key, String value) {
 						try {
-							logger.debug("map() : got key: " + key + ", value: " + value);
+							System.out.println("map() : got key: " + key + ", value: " + value);
 							ClickstreamData clickstreamData = gson.fromJson(value, ClickstreamData.class);
 
-							String action = "???";
-
-							/*-
-							  # TODO-1 : extract action from 'clickstreamData' data (clickstream.action)
-							  
-							  # TODO-2 : set action to "unknown" if clickstream.action is null
-							   
-							  Something like this will work:
-							   
-							 		String action = (clickstreamData.action != null) &&
-							 						(!clickstreamData.action.isEmpty()) ? clickstreamData.action : "unknown";
-							 */
-
-							KeyValue<String, Integer> actionKV = null;
-
-							/*-
-							 # TODO-3 : construct a new KeyValue as follows
-							 			key = action
-										value = 1
-							   like this:
-										actionKV = new KeyValue<>(action, 1);
-							 */
-
-							logger.debug("map() : returning : " + actionKV);
+							
+							String action = (clickstreamData.action != null) &&
+			 						(!clickstreamData.action.isEmpty()) ? clickstreamData.action : "unknown";
+							KeyValue<String, Integer> actionKV = new KeyValue<>(action, 1);
+							System.out.println("map() : returning : " + actionKV);
 							return actionKV;
 						} catch (Exception ex) {
-							logger.error("", ex);
+							System.out.println("" + ex);
 							return new KeyValue<String, Integer>("unknown", 1);
 						}
 					}
@@ -105,7 +87,7 @@ public class StreamsConsumer4_Map {
 		streams.cleanUp();
 		streams.start();
 
-		logger.info("kstreams starting on " + MyConfig.TOPIC_CLICKSTREAM);
+		System.out.println("kstreams starting on " + MyConfig.TOPIC_CLICKSTREAM);
 
 		Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
 
