@@ -11,14 +11,13 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.ForeachAction;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Printed;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import x.utils.MyConfig;
 
-public class StreamsConsumer2_Foreach {
-	private static final Logger logger = LoggerFactory.getLogger(StreamsConsumer2_Foreach.class);
+// Oct 2023 class
 
+public class StreamsConsumer2_Foreach {
 	public static void main(String[] args) {
 
 		Properties config = new Properties();
@@ -41,15 +40,14 @@ public class StreamsConsumer2_Foreach {
 		final KStream<String, String> clickstream = builder.stream("clickstream");
 
 		// print to console
-		// clickstream.print(Printed.toSysOut());
+		clickstream.print(Printed.toSysOut());
 
 		// process events one by one
 		clickstream.foreach(new ForeachAction<String, String>() {
 			long counter = 0;
 			public void apply(String key, String value) {
 				counter ++;
-				//# TODO-1 : print out the record (key and value)
-				//logger.debug("FOREACH [" + counter + "]:: KEY:" + ??? + ", VALUE:" + ??? + "\n");
+				System.out.println("FOREACH [" + counter + "]:: KEY:" + key + ", VALUE:" + value);
 			}
 		});
 
@@ -57,7 +55,7 @@ public class StreamsConsumer2_Foreach {
 		final KafkaStreams streams = new KafkaStreams(builder.build(), config);
 		streams.cleanUp();
 		streams.start();
-		logger.info("kstreams starting on " + MyConfig.TOPIC_CLICKSTREAM);
+		System.out.println("kstreams starting on " + MyConfig.TOPIC_CLICKSTREAM);
 
 		Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
 
