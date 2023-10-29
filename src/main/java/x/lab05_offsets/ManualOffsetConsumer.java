@@ -31,7 +31,7 @@ public class ManualOffsetConsumer {
 		KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
 		consumer.subscribe(Arrays.asList("offsets"));
 
-        System.out.println("Listening on topic: offets...");
+        System.out.println("Listening on topic: offsets...");
 
 		int numMessages = 0;
 		while (true) {
