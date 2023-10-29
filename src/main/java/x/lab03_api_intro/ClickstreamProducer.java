@@ -12,6 +12,8 @@ import x.utils.ClickStreamGenerator;
 import x.utils.ClickstreamData;
 import x.utils.MyUtils;
 
+// Oct 2023 class
+
 public class ClickstreamProducer {
 	public static void main(String[] args) throws Exception {
 		Properties props = new Properties();
