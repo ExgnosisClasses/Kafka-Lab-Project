@@ -13,7 +13,7 @@ import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// Oct 2023 class
+// Oct 2023 class 
 
 public class ManualOffsetConsumer {
 

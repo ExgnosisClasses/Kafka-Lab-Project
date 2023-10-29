@@ -11,9 +11,10 @@ import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// October 2023 class
+
 public class SeekingConsumer {
-	private static final Logger logger = LoggerFactory.getLogger(SeekingConsumer.class);
-	private static final String TOPIC = "test";
+		private static final String TOPIC = "offsets";
 
   public static void main(String[] args) throws Exception {
     Properties props = new Properties();
@@ -26,32 +27,32 @@ public class SeekingConsumer {
     KafkaConsumer<Integer, String> consumer = new KafkaConsumer<>(props);
     consumer.subscribe(Collections.singletonList(TOPIC)); // subscribe
     
-    logger.info("listening on  topic : " + TOPIC);
+    System.out.println("listening on  topic : " + TOPIC);
     
     // try to get partitions before polling.  do we get any partitions assigned?
-    logger.info("Before polling: assigned partitions # " + consumer.assignment().size());
+    System.out.println("Before polling: assigned partitions # " + consumer.assignment().size());
     for (TopicPartition p : consumer.assignment()) {
-    	logger.debug("Before polling, assigned partition : " + p);
+    	System.out.println("Before polling, assigned partition : " + p);
     }
 
     int read = 0;
     while (read < 5) {
       ConsumerRecords<Integer, String> records = consumer.poll(Duration.ofMillis(100));
       
-      logger.info("After polling: assigned partitions #" + consumer.assignment().size());
+      System.out.println("After polling: assigned partitions #" + consumer.assignment().size());
       if (consumer.assignment().size() == 0) {
-    	  logger.info("After polling: no partitions assigned yet.  keep polling");
+    	  System.out.println("After polling: no partitions assigned yet.  keep polling");
     	  continue;
       }
       
       // if we are here, we have partitions assigned
       for (TopicPartition p : consumer.assignment()) {
-      	logger.debug("After polling, assigned partition : " + p);
+    	  System.out.println("After polling, assigned partition : " + p);
       }
       
       // grab the first partition...
       TopicPartition partition = consumer.assignment().iterator().next();
-      logger.info ("Accessing partition : " + partition);
+      System.out.println("Accessing partition : " + partition);
       
       /*- TODO- go to specific offsets
        *    - read the first message
@@ -61,20 +62,20 @@ public class SeekingConsumer {
        *  Reference : look at various seek options available here
        *  https://kafka.apache.org/0100/javadoc/index.html?org/apache/kafka/clients/consumer/KafkaConsumer.html
        */
-      logger.debug("seeking to beginning of partition " + partition);
+      System.out.println("seeking to beginning of partition " + partition);
       consumer.seekToBeginning(Collections.singletonList(partition));
 
-      // logger.debug ("seeking to end of partition " + partition);
+      // System.out.println("seeking to end of partition " + partition);
       //consumer.seekToEnd(Collections.singletonList(partition));
 
 
-      // logger.debug ("seeking to position #5 of " + partition);
-      // consumer.seek(new TopicPartition("test", 0), 5);
+      // System.out.println("seeking to position #5 of " + partition);
+      // consumer.seek(new TopicPartition("offsets", 0), 5);
       
-      logger.debug ("current position " + consumer.position(partition));
+      System.out.println("current position " + consumer.position(partition));
       for (ConsumerRecord<Integer, String> record : records) {
         read++;
-        logger.debug("Received message : " + record);
+        System.out.println("Received message : " + record);
         break; // only process first message
       }
 
